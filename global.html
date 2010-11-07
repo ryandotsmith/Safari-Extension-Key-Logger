@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" charset="utf-8">
+    function performCommand(event) {
+      if (event.command === "log") {
+        alert('logging');
+        safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("beginLogging", null); 
+      }
+    }
+
+    function handleMessage(msgEvent) {
+      var messageName = msgEvent.name;
+      var messageData = msgEvent.message;
+      $.ajax({
+        type: 'POST',
+        url: "http://msghandler.heroku.com/messages" , 
+        dataType: "json",
+        data: {message: messageData},
+        success: function() { console.log("message sent") },
+        error: function(resp) { console.log("message failed"); console.log(resp); }
+
+      });
+
+
+    }
+
+    safari.application.addEventListener("command", performCommand, false);
+    safari.application.addEventListener("message", handleMessage,  false);
+  </script>	
+</head>
+</html>
